@@ -227,7 +227,7 @@
         <div class="campo c2"><label for="fCodigo">Código</label><input id="fCodigo" aria-describedby="hCodigo"><small class="dica-campo" id="hCodigo">Opcional. Ex.: 0415</small></div>
         <div class="campo c4"><label for="fDescricao">Descrição do produto <span class="obr">*</span></label><input id="fDescricao" aria-describedby="hDescricao"><small class="dica-campo" id="hDescricao">Ex.: TOALHA DE BANHO LUFAMAR</small></div>
         <div class="campo c2"><label for="fDe">Preço De</label><div class="moeda"><span class="moeda-rs" aria-hidden="true">R$</span><input id="fDe" inputmode="decimal" aria-describedby="hDe"></div><small class="dica-campo" id="hDe">Digite o valor, ex.: 64,90</small></div>
-        <div class="campo c2"><label for="fPor">Preço Por <span class="obr">*</span></label><div class="moeda"><span class="moeda-rs" aria-hidden="true">R$</span><input id="fPor" inputmode="decimal" aria-describedby="hPor"></div><small class="dica-campo" id="hPor">Digite o valor, ex.: 49,90</small></div>
+        <div class="campo c2"><label for="fPor">Preço Por</label><div class="moeda"><span class="moeda-rs" aria-hidden="true">R$</span><input id="fPor" inputmode="decimal" aria-describedby="hPor"></div><small class="dica-campo" id="hPor">Digite o valor, ex.: 49,90. Sem promoção? Preencha só um preço.</small></div>
         <div class="campo c2"><label for="fQtd">Quantidade</label><input id="fQtd" type="number" min="1" max="500" value="1" inputmode="numeric"></div>
         <div class="campo c3"><label for="fTamSel">Tamanho</label>
           <div class="tamwrap"><select id="fTamSel">
@@ -405,7 +405,9 @@ const COR = { amarelo:'#fde500', borda:'#f15a22', fio:'#3f6b2a', texto:'#232b1a'
 let uid = 0;
 function svgEtiqueta(it){
   const id = 'e' + (++uid);
-  const de = lerPreco(it.de), por = lerPreco(it.por);
+  let de = lerPreco(it.de), por = lerPreco(it.por);
+  if (por == null && de != null) { por = de; de = null; }        // só um preço: vira preço único
+  if (de != null && por != null && de === por) de = null;        // preços iguais: sem promoção
   const temDe = de != null && de > 0;
   const cod = String(it.codigo||'').trim();
   const rUtil = R - 3.6;
@@ -445,7 +447,7 @@ function svgEtiqueta(it){
     if (larg(s, tP) > maxW) tP *= maxW / larg(s, tP);
     const yTxt = yBB - (yBB - yBT - tP*0.72)/2;
     faixa = `<rect x="${xL.toFixed(2)}" y="${yBT}" width="${(xR-xL).toFixed(2)}" height="${(yBB-yBT).toFixed(2)}" rx="3.6" fill="${COR.faixa}" stroke="${COR.faixaBorda}" stroke-width="0.4"/>
-      <text x="${xPor.toFixed(2)}" y="${(yMeio+1.2).toFixed(2)}" font-size="5" fill="${COR.precoPor}" transform="rotate(-12 ${xPor.toFixed(2)} ${(yMeio+1.2).toFixed(2)})">Por</text>
+      <text x="${xPor.toFixed(2)}" y="${(yMeio+1.2).toFixed(2)}" font-size="5" fill="${COR.precoPor}" transform="rotate(-12 ${xPor.toFixed(2)} ${(yMeio+1.2).toFixed(2)})">${temDe ? 'Por' : 'R$'}</text>
       <text x="${(xIni + maxW/2).toFixed(2)}" y="${yTxt.toFixed(2)}" text-anchor="middle" fill="${COR.precoPor}" font-size="${tP.toFixed(2)}">${s}</text>`;
   }
 
@@ -493,7 +495,7 @@ function paginar(){
   const areaW = PAG_W - 2*MARG, areaH = PAG_H - 2*MARG;
   const lista = [];
   estado.itens.forEach((it, idx) => {
-    if (!String(it.descricao||'').trim() && lerPreco(it.por) == null) return;
+    if (!String(it.descricao||'').trim() && lerPreco(it.por) == null && lerPreco(it.de) == null) return;
     const q = Math.max(0, Math.min(500, parseInt(it.qtd, 10) || 0));
     for (let i = 0; i < q; i++) lista.push({ it, idx });
   });
@@ -684,9 +686,10 @@ fm('form').addEventListener('submit', ev => {
   ev.preventDefault();
   const it = lerForm();
   if (!it.descricao) { msg('Preencha a descrição.'); fm('fDescricao').focus(); return; }
-  if (lerPreco(it.por) == null) { msg('Preencha o Preço Por (ex.: 49,90).'); fm('fPor').focus(); return; }
   if (it.de && lerPreco(it.de) == null) { msg('Preço De inválido (ex.: 64,90).'); fm('fDe').focus(); return; }
-  it.por = fmt(lerPreco(it.por)); if (it.de) it.de = fmt(lerPreco(it.de));
+  if (it.por && lerPreco(it.por) == null) { msg('Preço Por inválido (ex.: 49,90).'); fm('fPor').focus(); return; }
+  if (!it.de && !it.por) { msg('Preencha pelo menos um preço (De ou Por).'); fm('fPor').focus(); return; }
+  if (it.por) it.por = fmt(lerPreco(it.por)); if (it.de) it.de = fmt(lerPreco(it.de));
   if (editIdx != null && estado.itens[editIdx]) {
     Object.assign(estado.itens[editIdx], it); linhaAtiva = editIdx;
     salvar(); montarTabela(); renderizar(true); toast('Etiqueta atualizada'); cancelarEdicao();
