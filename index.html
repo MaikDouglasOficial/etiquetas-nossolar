@@ -38,12 +38,12 @@
   .card-cab .dir { margin-left:auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .card-corpo { padding:18px 20px; }
   .cont { font-weight:500; color:var(--sub); font-size:13px; }
-  #cardForm.editando { border-color:#e5c400; box-shadow:0 0 0 3px #fff0a0, var(--sombra); }
-  #cardForm.editando .card-cab { background:#fffbe2; }
+  #cardForm.editando { border:2px solid var(--verde); box-shadow:0 0 0 3px rgba(11,90,50,.12), var(--sombra); }
+  #cardForm.editando .card-cab { background:#eef6f1; }
 
   /* ---------- botões ---------- */
   button { font:inherit; cursor:pointer; border-radius:8px; border:1px solid transparent; padding:9px 16px; font-size:14px; font-weight:600; line-height:1.2; transition:background .15s, border-color .15s, box-shadow .15s; }
-  button:focus-visible { outline:none; box-shadow:0 0 0 3px #ffe36b; }
+  button:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(11,90,50,.28); }
   .btn-pri { background:var(--vermelho); color:#fff; }
   .btn-pri:hover { background:var(--vermelho-esc); }
   .btn-sec { background:#fff; color:var(--verde-esc); border-color:#bfd0c5; }
@@ -99,18 +99,20 @@
 
   /* ---------- lista ---------- */
   .lista { display:flex; flex-direction:column; gap:10px; max-height:62vh; overflow:auto; padding:2px; }
-  .item { border:1px solid var(--borda); border-radius:10px; padding:12px 14px; display:grid; grid-template-columns:30px repeat(12, 1fr); gap:8px 10px; align-items:end; background:#fff; transition:border-color .15s, background .15s; }
+  .item { border:1px solid var(--borda); border-left:4px solid transparent; border-radius:10px; padding:12px 14px 12px 12px; display:grid; grid-template-columns:30px minmax(84px,1fr) minmax(84px,1fr) 64px minmax(140px,1.3fr) auto; gap:8px 10px; align-items:end; background:#fff; transition:border-color .15s, background .15s; }
   .item:hover { border-color:#bfd0c5; }
-  .item.sel { background:#fffbe6; border-color:#ecd45a; }
+  .item.sel { background:#eef6f1; border-color:var(--verde); border-width:2px 2px 2px 4px; padding:11px 13px 11px 12px; }
+  .item.sel .num { background:var(--verde); color:#fff; }
   .item .num { grid-row:span 2; align-self:center; width:28px; height:28px; border-radius:50%; background:var(--verde-claro); color:var(--verde-esc); font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
   .item .f { display:flex; flex-direction:column; gap:3px; min-width:0; }
   .item .f > span { font-size:11px; font-weight:700; color:var(--sub); text-transform:uppercase; letter-spacing:.4px; }
   .item input, .item select { font-size:14px; height:36px; padding:0 9px; border:1px solid #cfd8d2; border-radius:7px; background:#fff; width:100%; min-width:0; color:var(--texto); }
   .item input:focus, .item select:focus { outline:none; border-color:var(--verde); box-shadow:0 0 0 3px rgba(11,90,50,.12); }
   .tamwrap { display:flex; gap:4px; } .tamwrap select { flex:1; min-width:0; } .tamwrap input { width:58px !important; flex:none; }
-  .item .f-cod { grid-column:span 2; } .item .f-desc { grid-column:span 10; }
-  .item .f-de, .item .f-por, .item .f-qtd { grid-column:span 2; } .item .f-tam { grid-column:span 3; }
-  .item .f-ac { grid-column:span 3; flex-direction:row; gap:6px; justify-content:flex-end; }
+  .item .f-cod { grid-column:2; } .item .f-desc { grid-column:3 / -1; }
+  .item .f-de { grid-column:2; } .item .f-por { grid-column:3; } .item .f-qtd { grid-column:4; } .item .f-tam { grid-column:5; }
+  .item .f-qtd input { text-align:center; padding:0 4px; }
+  .item .f-ac { grid-column:6; flex-direction:row; gap:6px; justify-content:flex-end; }
   .item .f-ac button { font-size:12.5px; padding:0 10px; height:36px; }
   .vazio { text-align:center; color:var(--sub); padding:34px 12px; border:2px dashed var(--borda); border-radius:10px; font-size:14px; }
 
@@ -133,7 +135,7 @@
   .pagina .tag { position:absolute; display:block; cursor:pointer; }
   .pagina .tag, .pagina .tag svg, #fPrev svg { background:none !important; box-shadow:none !important; filter:none !important; }
   .pagina .tag svg { display:block; width:100%; height:100%; }
-  .pagina .tag.ativa { outline:3px dashed #2f8cff; outline-offset:2px; }
+  .pagina .tag.ativa { outline:2px dashed var(--verde); outline-offset:2px; }
   #paginas .vazio { background:#fff; }
 
   /* ---------- barra de impressão fixa ---------- */
@@ -163,10 +165,10 @@
     .linha-precos { gap:8px; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 62px; }
     .acoes button { flex:1; }
     .config { grid-template-columns:1fr; gap:8px; }
-    .item { grid-template-columns:repeat(6, 1fr); }
-    .item .num { grid-row:auto; grid-column:span 6; }
-    .item .f-cod { grid-column:span 2; } .item .f-desc { grid-column:span 4; }
-    .item .f-de, .item .f-por, .item .f-qtd { grid-column:span 2; } .item .f-tam, .item .f-ac { grid-column:span 6; }
+    .item { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 58px; }
+    .item .num { grid-row:auto; grid-column:1 / -1; }
+    .item .f-cod { grid-column:1; } .item .f-desc { grid-column:2 / -1; }
+    .item .f-de { grid-column:1; } .item .f-por { grid-column:2; } .item .f-qtd { grid-column:3; } .item .f-tam, .item .f-ac { grid-column:1 / -1; }
     .item .f-ac button { flex:1; }
     #previa { max-height:70vh; }
     .barra-imp-in { padding:10px 14px; } .barra-imp .aviso { display:none; }
@@ -564,7 +566,7 @@ function montarTabela(){
     <label class="f f-desc"><span>Descrição</span><input data-f="descricao" value="${esc(it.descricao)}"></label>
     <label class="f f-de"><span>Preço De</span><input data-f="de" value="${esc(it.de)}" inputmode="decimal"></label>
     <label class="f f-por"><span>Preço Por</span><input data-f="por" value="${esc(it.por)}" inputmode="decimal"></label>
-    <label class="f f-qtd"><span>Qtd</span><input data-f="qtd" type="number" min="0" max="99" value="${esc(it.qtd)}"></label>
+    <label class="f f-qtd"><span>Qtd</span><input data-f="qtd" type="text" inputmode="numeric" maxlength="2" title="Quantidade (0 a 99)" value="${esc(it.qtd)}"></label>
     <div class="f f-tam"><span>Tamanho</span>${opcoesTam(it)}</div>
     <div class="f f-ac"><button class="btn-sec" data-ac="edit" title="Editar no formulário">Editar</button><button class="btn-sec" data-ac="dup" title="Duplicar">Duplicar</button><button class="btn-perigo" data-ac="del" title="Remover">Remover</button></div>
   </div>`).join('');
@@ -584,6 +586,7 @@ tbody.addEventListener('input', ev => {
   if (f === 'tamSel') return;
   if (f === 'tamCm') { it.tam = ev.target.value === '' ? '' : ev.target.value; }
   else it[f] = ev.target.value;
+  if (f === 'qtd') { const v = ev.target.value.replace(/\D/g, '').slice(0, 2); if (v !== ev.target.value) ev.target.value = v; it.qtd = v; }
   if (f === 'de' || f === 'por') validar(ev.target);
   salvar(); renderizar();
 });
