@@ -74,6 +74,11 @@
   .formprev .rotulo { font-size:12px; color:var(--sub); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
   #fPrev svg { width:100%; height:auto; display:block; }
   #fPrev { background:transparent; padding:6px; }
+  .dica-campo { font-size:12px; color:var(--sub); line-height:1.3; }
+  .moeda { display:flex; align-items:stretch; }
+  .moeda-rs { display:flex; align-items:center; padding:0 12px; background:var(--verde-claro); color:var(--verde-esc); font-weight:700; font-size:15px; border:1.5px solid #c9d5cd; border-right:0; border-radius:8px 0 0 8px; }
+  .moeda input { border-radius:0 8px 8px 0 !important; }
+  .moeda:focus-within .moeda-rs { border-color:var(--verde); }
   .erro { border-color:var(--vermelho) !important; background:#fff5f4 !important; }
 
   /* ---------- configurações ---------- */
@@ -219,15 +224,15 @@
     <div class="card-corpo">
     <div class="formwrap">
       <form id="form" class="campos" autocomplete="off" novalidate>
-        <div class="campo c2"><label for="fCodigo">Código</label><input id="fCodigo" placeholder="Ex.: 0415"></div>
-        <div class="campo c4"><label for="fDescricao">Descrição do produto <span class="obr">*</span></label><input id="fDescricao" placeholder="Ex.: TOALHA DE BANHO LUFAMAR"></div>
-        <div class="campo c2"><label for="fDe">Preço De (R$)</label><input id="fDe" inputmode="decimal" placeholder="64,90"></div>
-        <div class="campo c2"><label for="fPor">Preço Por (R$) <span class="obr">*</span></label><input id="fPor" inputmode="decimal" placeholder="49,90"></div>
+        <div class="campo c2"><label for="fCodigo">Código</label><input id="fCodigo" aria-describedby="hCodigo"><small class="dica-campo" id="hCodigo">Opcional. Ex.: 0415</small></div>
+        <div class="campo c4"><label for="fDescricao">Descrição do produto <span class="obr">*</span></label><input id="fDescricao" aria-describedby="hDescricao"><small class="dica-campo" id="hDescricao">Ex.: TOALHA DE BANHO LUFAMAR</small></div>
+        <div class="campo c2"><label for="fDe">Preço De</label><div class="moeda"><span class="moeda-rs" aria-hidden="true">R$</span><input id="fDe" inputmode="decimal" aria-describedby="hDe"></div><small class="dica-campo" id="hDe">Digite o valor, ex.: 64,90</small></div>
+        <div class="campo c2"><label for="fPor">Preço Por <span class="obr">*</span></label><div class="moeda"><span class="moeda-rs" aria-hidden="true">R$</span><input id="fPor" inputmode="decimal" aria-describedby="hPor"></div><small class="dica-campo" id="hPor">Digite o valor, ex.: 49,90</small></div>
         <div class="campo c2"><label for="fQtd">Quantidade</label><input id="fQtd" type="number" min="1" max="500" value="1" inputmode="numeric"></div>
         <div class="campo c3"><label for="fTamSel">Tamanho</label>
           <div class="tamwrap"><select id="fTamSel">
             <option value="">Padrão</option><option value="P">Pequeno (6 cm)</option><option value="M">Médio (8,5 cm)</option><option value="G">Grande (11 cm)</option><option value="C">Personalizado (cm)</option>
-          </select><input id="fTamCm" type="number" min="4" max="17" step="0.1" placeholder="cm" style="display:none" aria-label="Diâmetro em cm"></div>
+          </select><input id="fTamCm" type="number" min="4" max="17" step="0.1" style="display:none" aria-label="Diâmetro em cm" title="Diâmetro em cm"></div>
         </div>
         <div class="campo c3 acoes">
           <button type="submit" id="btnSalvarForm" class="btn-pri btn-g">+ Adicionar etiqueta</button>
@@ -268,7 +273,7 @@
         <summary>Colar vários produtos do Excel (opcional)</summary>
         <div class="det-corpo">
           <p class="dica">Copie as colunas do Excel nesta ordem: <b>Código, Descrição, Preço De, Preço Por</b> (opcional: <b>Quantidade</b>, <b>Tamanho em cm</b>) e cole abaixo.</p>
-          <textarea id="txtColar" placeholder="0415	TOALHA DE BANHO LUFAMAR 0415	64,90	49,90"></textarea>
+          <textarea id="txtColar" aria-label="Cole aqui as linhas do Excel"></textarea>
           <div class="barra" style="margin-top:10px">
             <button id="btnColarAdd" class="btn-verde">Adicionar à lista</button>
             <button id="btnColarSub" class="btn-sec">Substituir a lista</button>
