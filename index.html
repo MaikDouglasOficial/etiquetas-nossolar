@@ -698,9 +698,9 @@ function editarNoForm(i){
 }
 function cancelarEdicao(){
   editIdx = null; fm('formTitulo').textContent = 'Nova etiqueta'; fm('btnSalvarForm').textContent = '+ Adicionar etiqueta';
-  fm('btnCancelarEd').style.display = 'none'; fm('cardForm').classList.remove('editando'); limparForm(); fm('fCodigo').focus();
+  fm('btnCancelarEd').style.display = 'none'; fm('cardForm').classList.remove('editando'); limparForm(); fm('fCodigo').focus({ preventScroll:true });
 }
-function adicionar(){ fm('fCodigo').focus(); }
+function adicionar(){ fm('fCodigo').focus({ preventScroll:true }); }
 fm('form').addEventListener('submit', ev => {
   ev.preventDefault();
   const it = lerForm();
@@ -715,8 +715,7 @@ fm('form').addEventListener('submit', ev => {
   } else {
     estado.itens.push(novoItem(it)); linhaAtiva = estado.itens.length - 1;
     salvar(); montarTabela(); renderizar(true); toast('Etiqueta adicionada');
-    limparForm(); fm('fCodigo').focus();
-    const ult = tbody.lastElementChild; ult && ult.scrollIntoView({ block:'nearest' });
+    limparForm(); fm('fCodigo').focus({ preventScroll:true });
   }
 });
 fm('btnCancelarEd').onclick = cancelarEdicao;
@@ -831,7 +830,7 @@ document.getElementById('formLogin').addEventListener('submit', ev => {
   const senha = document.getElementById('lgSenha').value;
   if (USUARIOS[u] && sha256(senha) === USUARIOS[u]) {
     sessionStorage.setItem(SESSAO, u); document.getElementById('lgErro').textContent = '';
-    document.getElementById('lgSenha').value = ''; entrarUI(u); renderizar(true); prevForm(); fm('fCodigo').focus();
+    document.getElementById('lgSenha').value = ''; entrarUI(u); renderizar(true); prevForm(); fm('fCodigo').focus({ preventScroll:true });
   } else {
     document.getElementById('lgErro').textContent = 'Usuário ou senha incorretos.';
     document.getElementById('lgSenha').value = ''; document.getElementById('lgSenha').focus();
@@ -843,7 +842,7 @@ iniciarLogin();
 
 atualizarTamUI(); montarTabela();
 const pronto = (document.fonts && document.fonts.load) ? document.fonts.load('20px NLHeavy').catch(()=>{}) : Promise.resolve();
-pronto.then(() => { renderizar(true); prevForm(); if (document.body.classList.contains('logado')) fm('fCodigo').focus(); document.body.dataset.pronto = '1'; });
+pronto.then(() => { renderizar(true); prevForm(); if (document.body.classList.contains('logado')) fm('fCodigo').focus({ preventScroll:true }); document.body.dataset.pronto = '1'; });
 })();
 </script>
 </body>
