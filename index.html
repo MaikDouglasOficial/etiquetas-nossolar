@@ -794,7 +794,7 @@ function toast(m){ const t = document.getElementById('toast'); t.textContent = m
 window.__etq = { estado, lerPreco, fmt, renderizar, montarTabela, setTam };
 
 // ---------- login (proteção simples, só no navegador) ----------
-const USUARIOS = { 'MAIK': '2afb5dd95e540389613f8c1d99018e0d509ee59333f3293135164afa3df98f68' };   // senha guardada apenas como hash SHA-256
+const USUARIOS = { 'NOSSOLAR': '0b02af144d69e93613fa7f2999dd5990234d1e2d62fa6a81d9a0cef1ebeba27e' };   // senha guardada apenas como hash SHA-256
 function sha256(txt){
   const rr = (v, n) => (v >>> n) | (v << (32 - n));
   const bytes = new TextEncoder().encode(txt), K = [], H = [];
@@ -817,7 +817,8 @@ function sha256(txt){
   }
   return h.map(v => ('00000000' + (v >>> 0).toString(16)).slice(-8)).join('');
 }
-const SESSAO = 'etiquetasNossoLar.sessao';
+const SESSAO = 'etiquetasNossoLar.sessao.v2';
+sessionStorage.removeItem('etiquetasNossoLar.sessao');   // invalida logins antigos
 function entrarUI(nome){ document.body.classList.add('logado'); document.getElementById('usuarioNome').textContent = nome; }
 function iniciarLogin(){
   const s = sessionStorage.getItem(SESSAO);
