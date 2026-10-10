@@ -260,11 +260,6 @@
           <input type="range" id="tamRange" min="4" max="17" step="0.5" aria-label="Tamanho padrão">
           <input type="number" id="tamNum" min="4" max="17" step="0.1" aria-label="Tamanho padrão em cm"><span class="unid">cm de diâmetro</span>
         </div>
-        <span class="rot">Inclinação do texto</span>
-        <div class="linha">
-          <input type="range" id="inclRange" min="-45" max="45" step="1" aria-label="Inclinação"><span id="inclVal" class="unid" style="min-width:34px"></span>
-          <button class="btn-sec btn-p" id="inclZero">Reto</button>
-        </div>
       </div>
       <div id="tbody" class="lista"></div>
       <div id="semItens" class="vazio" style="display:none">Nenhuma etiqueta ainda. Preencha o formulário acima e clique em <b>Adicionar etiqueta</b>.</div>
@@ -341,7 +336,7 @@ let estado = carregar();
 let linhaAtiva = null;
 function novoItem(o){ return Object.assign({ id: Math.random().toString(36).slice(2,10), codigo:'', descricao:'', de:'', por:'', qtd:1, tam:'' }, o||{}); }
 function carregar(){
-  try { const s = JSON.parse(localStorage.getItem(CHAVE)); if (s && Array.isArray(s.itens)) { if (!s.v2) { s.tamPadrao = TAM_PADRAO; s.v2 = 1; } s.tamPadrao = clampCm(+s.tamPadrao || TAM_PADRAO); s.zoom = s.zoom || 0.5; s.inclinacao = +s.inclinacao || 0; return s; } } catch(e){}
+  try { const s = JSON.parse(localStorage.getItem(CHAVE)); if (s && Array.isArray(s.itens)) { if (!s.v2) { s.tamPadrao = TAM_PADRAO; s.v2 = 1; } s.tamPadrao = clampCm(+s.tamPadrao || TAM_PADRAO); s.zoom = s.zoom || 0.5; s.inclinacao = 0; return s; } } catch(e){}
   return { v2: 1, tamPadrao: TAM_PADRAO, zoom: 0.5, inclinacao: 0, itens: [] };
 }
 let tSalvar; function salvar(){ clearTimeout(tSalvar); tSalvar = setTimeout(()=>{ try{ localStorage.setItem(CHAVE, JSON.stringify(estado)); }catch(e){} }, 200); }
@@ -465,7 +460,7 @@ function svgEtiqueta(it){
       <line x1="${(xc - larg(vDe, tDe)/2 - 1).toFixed(2)}" y1="${(yTxt - tDe*0.33).toFixed(2)}" x2="${(xc + larg(vDe, tDe)/2 + 1).toFixed(2)}" y2="${(yTxt - tDe*0.40).toFixed(2)}" stroke="#d7261e" stroke-width="${Math.max(0.8, tDe*0.11).toFixed(2)}" stroke-linecap="round"/>`;
   }
 
-  const giro = +estado.inclinacao || 0;
+  const giro = 0;   // texto sempre reto
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${VBX} ${VBY} ${VBW} ${VBH}" font-family='${FONTE}'>
     <defs><clipPath id="${id}c"><circle cx="${CX}" cy="${CY}" r="${R-2.6}"/></clipPath></defs>
     <path d="${PATH}" fill="none" stroke="${COR.borda}" stroke-width="2.2" stroke-linejoin="round"/>
@@ -736,10 +731,6 @@ document.querySelectorAll('#segPreset button').forEach(b => b.onclick = () => se
 tamRange.oninput = () => setTam(tamRange.value);
 tamNum.onchange = () => setTam(String(tamNum.value).replace(',', '.'), true);
 
-const inclRange = document.getElementById('inclRange'), inclVal = document.getElementById('inclVal');
-function atualizarIncl(){ inclRange.value = estado.inclinacao; inclVal.textContent = estado.inclinacao + '°'; }
-inclRange.oninput = () => { estado.inclinacao = +inclRange.value; atualizarIncl(); salvar(); renderizar(); };
-document.getElementById('inclZero').onclick = () => { estado.inclinacao = 0; atualizarIncl(); salvar(); renderizar(true); };
 
 // ---------- prévia ----------
 const zoom = document.getElementById('zoom');
@@ -811,7 +802,7 @@ document.getElementById('btnSair').onclick = () => { sessionStorage.removeItem(S
 window.addEventListener('beforeprint', () => { if (!document.body.classList.contains('logado')) setTimeout(() => { document.getElementById('print').innerHTML = ''; }); });
 iniciarLogin();
 
-atualizarTamUI(); atualizarIncl(); montarTabela();
+atualizarTamUI(); montarTabela();
 const pronto = (document.fonts && document.fonts.load) ? document.fonts.load('20px NLHeavy').catch(()=>{}) : Promise.resolve();
 pronto.then(() => { renderizar(true); prevForm(); if (document.body.classList.contains('logado')) fm('fCodigo').focus(); document.body.dataset.pronto = '1'; });
 })();
