@@ -44,6 +44,7 @@
   /* ---------- botões ---------- */
   button { font:inherit; cursor:pointer; border-radius:8px; border:1px solid transparent; padding:9px 16px; font-size:14px; font-weight:600; line-height:1.2; transition:background .15s, border-color .15s, box-shadow .15s; }
   button:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(11,90,50,.28); }
+  #btnSalvarForm:focus { outline:3px solid #ffb400; outline-offset:3px; box-shadow:0 0 0 7px rgba(255,180,0,.35); filter:brightness(1.08); }
   .btn-pri { background:var(--vermelho); color:#fff; }
   .btn-pri:hover { background:var(--vermelho-esc); }
   .btn-sec { background:#fff; color:var(--verde-esc); border-color:#bfd0c5; }
@@ -724,8 +725,18 @@ fm('fQtd').addEventListener('blur', () => { const n = parseInt(fm('fQtd').value,
 fm('form').addEventListener('input', ev => { if (ev.target.id === 'fDe' || ev.target.id === 'fPor') validar(ev.target); msg(''); prevForm(); });
 fm('fTamSel').addEventListener('change', () => { const c = fm('fTamSel').value === 'C'; fm('fTamCm').style.display = c ? '' : 'none'; if (c) { fm('fTamCm').value = fm('fTamCm').value || estado.tamPadrao; fm('fTamCm').focus(); } prevForm(); });
 ['fDe','fPor'].forEach(id => fm(id).addEventListener('blur', () => { const v = lerPreco(fm(id).value); if (v != null) fm(id).value = fmt(v); }));
-// Enter em qualquer campo do formulário adiciona (o form já faz submit; select não dispara, então tratamos)
-fm('fTamSel').addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); fm('form').requestSubmit(); } });
+// Enter avança para o próximo campo; só o botão "Adicionar etiqueta" (com foco) adiciona. Shift+Enter volta.
+fm('form').addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter' || ev.isComposing) return;
+  const ordem = ['fCodigo','fDescricao','fDe','fPor','fQtd','fTamSel','fTamCm','btnSalvarForm']
+    .map(fm).filter(el => el && el.offsetParent !== null && !el.disabled);
+  const i = ordem.indexOf(ev.target);
+  if (ev.target === fm('btnSalvarForm') && !ev.shiftKey) return;   // Enter no botão: adiciona (submit)
+  if (i < 0) return;
+  ev.preventDefault();
+  const prox = ordem[i + (ev.shiftKey ? -1 : 1)];
+  if (prox) { prox.focus({ preventScroll:true }); if (prox.select && prox.tagName === 'INPUT') prox.select(); }
+}, true);
 document.getElementById('btnLimpar').onclick = () => { if (!estado.itens.length || confirm('Apagar todos os produtos da lista?')) { estado.itens = []; linhaAtiva = null; salvar(); montarTabela(); renderizar(true); } };
 document.getElementById('btnExemplos').onclick = () => {
   estado.itens.push(
