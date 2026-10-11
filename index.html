@@ -232,17 +232,17 @@
     <div class="card-corpo">
     <div class="formwrap">
       <form id="form" class="campos" autocomplete="off" novalidate>
-        <div class="campo c2"><label for="fCodigo">Código</label><input id="fCodigo" aria-describedby="hCodigo"><small class="dica-campo" id="hCodigo">Opcional. Ex.: 0415</small></div>
-        <div class="campo c4"><label for="fDescricao">Descrição do produto <span class="obr">*</span></label><input id="fDescricao" aria-describedby="hDescricao"><small class="dica-campo" id="hDescricao">Ex.: TOALHA DE BANHO LUFAMAR</small></div>
+        <div class="campo c2"><label for="fCodigo">Código</label><input id="fCodigo" enterkeyhint="next" aria-describedby="hCodigo"><small class="dica-campo" id="hCodigo">Opcional. Ex.: 0415</small></div>
+        <div class="campo c4"><label for="fDescricao">Descrição do produto <span class="obr">*</span></label><input id="fDescricao" enterkeyhint="next" aria-describedby="hDescricao"><small class="dica-campo" id="hDescricao">Ex.: TOALHA DE BANHO LUFAMAR</small></div>
         <div class="linha-precos c6">
-        <div class="campo"><label for="fDe">Preço De</label><div class="moeda"><span class="moeda-rs" aria-hidden="true">R$</span><input id="fDe" inputmode="decimal" aria-describedby="hDe"></div><small class="dica-campo" id="hDe">Digite o valor, ex.: 64,90</small></div>
-        <div class="campo"><label for="fPor">Preço Por</label><div class="moeda"><span class="moeda-rs" aria-hidden="true">R$</span><input id="fPor" inputmode="decimal" aria-describedby="hPor"></div><small class="dica-campo" id="hPor">Digite o valor, ex.: 49,90. Sem promoção? Preencha só este campo.</small></div>
-        <div class="campo campo-qtd"><label for="fQtd">Qtd.</label><input id="fQtd" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="1" aria-label="Quantidade de cópias (1 a 99)" title="Quantidade de cópias (1 a 99)"></div>
+        <div class="campo"><label for="fDe">Preço De</label><div class="moeda"><span class="moeda-rs" aria-hidden="true">R$</span><input id="fDe" enterkeyhint="next" inputmode="decimal" aria-describedby="hDe"></div><small class="dica-campo" id="hDe">Digite o valor, ex.: 64,90</small></div>
+        <div class="campo"><label for="fPor">Preço Por</label><div class="moeda"><span class="moeda-rs" aria-hidden="true">R$</span><input id="fPor" enterkeyhint="next" inputmode="decimal" aria-describedby="hPor"></div><small class="dica-campo" id="hPor">Digite o valor, ex.: 49,90. Sem promoção? Preencha só este campo.</small></div>
+        <div class="campo campo-qtd"><label for="fQtd">Qtd.</label><input id="fQtd" enterkeyhint="next" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="1" aria-label="Quantidade de cópias (1 a 99)" title="Quantidade de cópias (1 a 99)"></div>
         </div>
         <div class="campo c3"><label for="fTamSel">Tamanho</label>
           <div class="tamwrap"><select id="fTamSel">
             <option value="">Padrão</option><option value="P">Pequeno (6 cm)</option><option value="M">Médio (8,5 cm)</option><option value="G">Grande (11 cm)</option><option value="C">Personalizado (cm)</option>
-          </select><input id="fTamCm" type="number" min="4" max="17" step="0.1" style="display:none" aria-label="Diâmetro em cm" title="Diâmetro em cm"></div>
+          </select><input id="fTamCm" enterkeyhint="next" type="number" min="4" max="17" step="0.1" style="display:none" aria-label="Diâmetro em cm" title="Diâmetro em cm"></div>
         </div>
         <div class="campo c3 acoes">
           <button type="submit" id="btnSalvarForm" class="btn-pri btn-g">+ Adicionar etiqueta</button>
@@ -725,18 +725,31 @@ fm('fQtd').addEventListener('blur', () => { const n = parseInt(fm('fQtd').value,
 fm('form').addEventListener('input', ev => { if (ev.target.id === 'fDe' || ev.target.id === 'fPor') validar(ev.target); msg(''); prevForm(); });
 fm('fTamSel').addEventListener('change', () => { const c = fm('fTamSel').value === 'C'; fm('fTamCm').style.display = c ? '' : 'none'; if (c) { fm('fTamCm').value = fm('fTamCm').value || estado.tamPadrao; fm('fTamCm').focus(); } prevForm(); });
 ['fDe','fPor'].forEach(id => fm(id).addEventListener('blur', () => { const v = lerPreco(fm(id).value); if (v != null) fm(id).value = fmt(v); }));
-// Enter avança para o próximo campo; só o botão "Adicionar etiqueta" (com foco) adiciona. Shift+Enter volta.
-fm('form').addEventListener('keydown', ev => {
-  if (ev.key !== 'Enter' || ev.isComposing) return;
-  const ordem = ['fCodigo','fDescricao','fDe','fPor','fQtd','fTamSel','fTamCm','btnSalvarForm']
+// Enter avança UM campo por vez; só o botão "Adicionar etiqueta" (com foco/clicado) adiciona. Shift+Enter volta.
+function ordemCampos(){
+  return ['fCodigo','fDescricao','fDe','fPor','fQtd','fTamSel','fTamCm','btnSalvarForm']
     .map(fm).filter(el => el && el.offsetParent !== null && !el.disabled);
-  const i = ordem.indexOf(ev.target);
-  if (ev.target === fm('btnSalvarForm') && !ev.shiftKey) return;   // Enter no botão: adiciona (submit)
-  if (i < 0) return;
-  ev.preventDefault();
-  const prox = ordem[i + (ev.shiftKey ? -1 : 1)];
-  if (prox) { prox.focus({ preventScroll:true }); if (prox.select && prox.tagName === 'INPUT') prox.select(); }
-}, true);
+}
+function moverCampo(de, passo){
+  const ordem = ordemCampos(), i = ordem.indexOf(de);
+  const prox = ordem[i < 0 ? 0 : i + passo];
+  if (prox) { prox.focus({ preventScroll:true }); if (prox.tagName === 'INPUT') prox.select(); }
+}
+if (!window.etqEnterNav) {           // evita ligar o handler duas vezes
+  window.etqEnterNav = true;
+  fm('form').addEventListener('keydown', ev => {
+    const enter = ev.key === 'Enter' || ev.keyCode === 13;
+    if (!enter) return;
+    if (ev.target === fm('btnSalvarForm') && !ev.shiftKey && !ev.repeat) return;   // Enter no botão: adiciona
+    ev.preventDefault(); ev.stopPropagation();
+    if (ev.repeat) return;                // tecla segurada não avança vários campos
+    moverCampo(ev.target, ev.shiftKey ? -1 : 1);
+  }, true);
+  // bloqueia envio implícito (Enter em campo, teclado de celular "Ir", etc.): só o botão adiciona
+  fm('form').addEventListener('submit', ev => {
+    if (ev.submitter !== fm('btnSalvarForm')) { ev.preventDefault(); ev.stopImmediatePropagation(); moverCampo(document.activeElement, 1); }
+  }, true);
+}
 document.getElementById('btnLimpar').onclick = () => { if (!estado.itens.length || confirm('Apagar todos os produtos da lista?')) { estado.itens = []; linhaAtiva = null; salvar(); montarTabela(); renderizar(true); } };
 document.getElementById('btnExemplos').onclick = () => {
   estado.itens.push(
